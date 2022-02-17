@@ -1,0 +1,337 @@
+---
+title: "Tarea 2"
+author: "Erick Emiliano Aduna Camilo"
+date: "16/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tarea 2 Genómica Funcional 2022  
+
+
+Elabora un documento de RMarkdown con tus respuestas. Envía y/o sube a una liga de github tu respuesta debes incluir al menos el archivo con extensión Rmd y opcionalmente el archivo html. Los comentarios a los problemas, códigos y sobre todo discusión de tus resultados deben ir como texto de RMarkdown 
+
+
+
+
+**1. (15) Considera las siguientes cantidades discute y justifica qué tipo de distribución de probabilidad pueden tener las siguientes variables:** 
+
+
+**a.** El número (talla) de calzado de adultos varones en México.
+
+Para este ejemplo, la distribución de los datos será unimodal, debido a que la mayoría de los datos son promedio, pocas personas tendran o pies muy pequeños o pies demasiado grandes,por lo que la distribución pudiera verse por ejemplo en una distribuciómn normal.
+
+
+**b.** La distribución de habitantes en asentamientos humanos de México. 
+
+Para este caso pudieran tener distribución de cola larga tomando en cuenta la distribución de la población, en las grandes ciudades del país como CDMX, Monterrey o Guadalajara con concentraciones grandes de gente, y en cambio muchos lugares tendran muy poca densidad poblacional, dando una distribución free-scale.   
+
+
+**c.** La velocidad promedio de los automóviles en Bernardo Quintana a las 9 de la mañana en un día laborable. 
+
+Tomando en cuenta el congestionamiento vehicular generadi por la enorme cantidad de personas que circularían por la avenida, por lo que la distribución de la velocidad es free-scale , la mayoría de los carros irían a velocidad baja y muy pocos (practicamente ninguno) a velocidades muy altas. 
+
+**d.** La velocidad promedio de los automóviles en Bernardo Quintana a las 3 de la mañana. 
+Para este caso la distribución de la velocidad podría ser normal, tomando en cuenta que los conductores respeten la velocidad permitida, a unos 80 km/h, muy pocos carros irian a velocidades muy bajas y para casos de velocidades altas esto tambien aplicaría. 
+
+
+**2. (5) Supongamos que tenemos dos nodos (A,B) en una red. El nodo A y B tiene el mismo degree, pero el A tiene un coeficiente de clusterización de 1 y el nodo B un coeficiente bajo.Dibuja está situación y explica cuál sería una mejor diana si quieres eliminarlos y afectar a la red.**
+
+
+```{r Red A y B, echo=FALSE, message=FALSE}
+
+
+library(igraph)
+
+AB <- make_empty_graph(n=9, directed = F)
+
+AB <- add.edges(AB, c(1,5,1,2,1,3,1,4,5,6,6,7,6,8,6,9,9,8,2,5,5,4,3,4,2,4,3,5,2,3))
+
+
+
+plot(AB)
+
+
+
+
+print(degree(AB))
+
+
+
+
+
+
+```
+
+Para esta red como podemos ver 1 sería A y el 6 B, 1 tiene un coeficiente de cuslterización, y 6 uno muy bajo, sin embargo como podemos apreciar en los valores abajo, tienen el mismo valor de degree,, si queremos atacar a la red, una buena diana sería eliminar a 6 debido a que la red se separa y desconecta más en comparación a eliminar a 1. Estamos además suponiendo que la red es no dirigida, sin embargo, en el caso de que sea dirgida, se pierden paths debido a la perdida de conexiones. 
+
+
+
+```{r echo=TRUE}
+
+
+A <- delete.vertices(AB, 1)
+
+plot(A)
+
+#Aquí eliminamos a A que en este caso es 1, venmos como estructuralmente la red no se ve tan afectada, el diametro sigue siendo el mismo.
+
+
+B <- delete.vertices(AB, 6)
+
+plot(B)
+
+#Caso contrario aquí donde al eliminar a 6 la estructura de la red se fragmenta y se pierden posibles paths a 6, 7 y 8
+
+
+
+```
+
+**3. (40) Elabora un programa en R que usando funciones calcule, a partir de una matriz de adyacencia (Sólo utiliza R base para resolver este problema)**
+
+*a*. Si la red es dirigida o no. 
+{r eval=FALSE, include=FALSE}
+
+library(igraphdata)
+
+data("yeast")
+
+l <- nrow(yeast)
+
+for ( a in l) {
+  
+a <- yeast[a,]
+
+b <- yeast[,a]
+
+
+a <- as.vector(a)
+
+b <- as.vector(b)
+
+
+print(a==b)
+
+
+Con este ciclo for comparamos los datos de renglon y de columna, haciendolo con todos y cada uno de los datos, si obtenermos valores de False esto querria decir que la red es dirigida, ya que los valores no coinciden 
+
+
+*b*. Si la red es pesada o no.
+``{r eval=FALSE, include=FALSE}
+
+ami <- as.factor(yeast)
+
+ 
+print(table(ami))
+
+
+Tomamos la matriz y la hacemos factor, despues tomamos ese objeto, y le aplicamos un table, si encontramos valores distintos de 1 y 0 querría decir que es pesada debido a que la conexión tienen valores distintos en base al peso de esa conexión 
+
+*c.* El degree de los nodos. 
+
+{r eval=FALSE, include=FALSE}
+
+
+dee <- c()
+
+for(a in 1:(nrow(yeast))){
+  
+  
+  s<-  as.vector(yeast[a,])
+  s <- subset(s, 1 == s)
+  
+  dee[a]<- length(s)
+}
+
+
+dee
+
+
+Con la función de arriba generamos un vector con los valores del degree,esta función se puede aplicar a cualquier matriz de adyacencia que se de como argumento en x y nos genera un vector con los valores del degree.
+
+
+
+*d.* El histograma del degree. 
+
+{r eval=FALSE, include=FALSE}
+
+hist(dee)
+
+
+
+Con el ciclo for de arriba queda listo y simplemente usando r base corremos el degree
+
+
+### Nota importante, los ejercicios de la parte 3 no cargaban la base de yeast, sobre la cual se basan los códigos, sin embargo en la parte 4 lo hacen bien, al correrlos sin el markdown si corre la parte 3, el código esta añadido como comentarios 
+
+**4. (40) A partir de la red de interacción de proteínas alojada en la librería igraphdata, que puedes llamar mediante data(yeast) elabora un programa en R (acá sí puedes usar librerías especializadas de R) que:**
+
+
+**a**. Calcule la distribución de conectividades y grafique esa distribución . Discute tu resultado. 
+
+```{r echo=FALSE}
+
+library(igraphdata)
+
+data("yeast")
+
+ a <- yeast
+
+ 
+deey <- degree(a, mode = "out")
+
+hist(deey, main = "Distribución de conectividades", xlab  = "Proteínas")
+
+
+
+
+
+```
+
+Como podemos ver la distribución de los datos es free-scale, tiene sentido puesto estamos tratando con una red de datos biológicos, donde existen pocos "HUBS", o nodos con un número de conexiones muy alto, situación que hace bastante robusta ante fallos, 
+
+
+**b**. Grafique el boxplot de la distribución de conectividades y discute tu resultado. 
+
+```{r echo=FALSE}
+
+boxplot(deey)
+
+
+```
+Como podemos ver en el boxplot, la mayoría de los datos estaán agrupados en valores menores a los 20 conexiones, siendo una gran parte, otro dato que destaca es la cantidad de outliers, que podrían ser considerados los HUBS de la red, sobre todo aquellos que tienen más de 80 conexiones. 
+
+
+**c.** Encuentre la proporción de nodos que tienen 15 o más conectividades.
+
+```{r}
+
+degyeast <- degree(yeast)
+
+
+quince <- subset(degyeast,15<= degree(yeast))
+
+length(quince)
+
+
+
+```
+
+441 porteinas tienen 15 o más conexiones o el 16.8% de las proteinas de la levadura.  
+
+
+**d.** Calcule el degree máximo de la red. 
+
+```{r echo=TRUE}
+
+print(max(degree(yeast, mode = "out")))
+
+
+```
+**e.** Calcule el diámetro 
+
+```{r echo=TRUE}
+
+diayeast <- diameter(yeast, directed = T)
+
+print(diayeast)
+
+```
+
+**f.** La trayectoria más larga. 
+
+```{r echo=TRUE}
+
+max(distances(yeast, v= V(yeast),to= V(yeast), mode = c("out")))
+
+
+```
+
+**g.** Elimine los 10 nodos más conectados de la red y determine el diámetro cada vez que lo haga. 
+
+```{r echo=TRUE}
+
+pro <- c()
+
+
+pro <- head(sort(degree(yeast, mode = "out"), decreasing = T),10)
+
+
+proteinas <- c(names(pro))
+proteinas
+
+
+```
+Aquí tenemos a las 10 proteínas más conectadas, son las que más vamos a eliminar, una por una, para eso usaremos un ciclo for a partir del vector que creamos anteriormente.  
+
+
+```{r }
+
+for(x in proteinas){
+  
+ yeast_no_hubs <- delete_vertices(yeast,x)
+
+ yeast_no_hubs
+
+ print(diameter(yeast_no_hubs))
+ 
+}
+
+```
+Al eliminar y repetir el proceso 10 veces, notamos que aparentemente el díametro no se ve adectado, dnado a entender que la red es bastante robusta incluso ante ataques dirigidos
+
+
+**h.** Determine los diez nodos más importantes por al menos tres medidas de centralidad. 
+
+Determinamos los diez nodos más conectados mediante el degree en y estan en el vector de "proteinas"
+
+```{r echo=TRUE}
+
+
+exentricidad <- head(sort(eccentricity(yeast, mode = c("out")), decreasing = T),10)
+
+exentricidad
+
+
+
+
+
+```
+En base a la eccentricidad, obtenemos que los nodos que requieren para llegar a su nodo más lejano, como se puede ver son valores muy similares a los del diametro de la red, dando a entender que esta muy bien conectada en base a distintos puntos. 
+
+```{r}
+close <-  head(sort(closeness(yeast), decreasing = F),10)
+```
+
+Aquí obtenemos los valores que requieren menos, pasos para llegar de un nodo dado a otro. 
+
+```{r echo=TRUE}
+
+pro
+
+exentricidad
+
+close
+```
+
+**i.** Clusterizar la red por al menos dos métodos y determinar el tamaño del clúster más grande. 
+```{r}
+
+fgy <- cluster_fast_greedy(yeast)
+
+max(table(membership(fgy)))
+
+```
+No corrio el código del segundo método, se tardo mucho en correr, sin embargo la linea de código sería la misma solo cambiando los valores 
+
+**j.** Determine si la red es de mundo pequeño, ultra pequeño u otra.
+
+En base al diámetro de la red y los valores obtenidos en el vector de eccentricity podemos decir que la red es de mundo pequeño por el valor de 15 en todos los casos, por lo que no te lleva tantos pasos llegar de un nodo a otro.
+
+
+
+
+ 
