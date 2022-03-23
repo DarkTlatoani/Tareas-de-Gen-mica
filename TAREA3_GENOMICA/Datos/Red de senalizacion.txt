@@ -1,0 +1,23 @@
+targets, factors
+
+CIS, cGMP & cADPR & InsP3
+cGMP, GC
+cADPR, ADPRc
+InsP3,PLC
+GC, NO 
+ADPRc, NO 
+NO, NOS 
+NOS,CA2
+PLC,CA2
+CA2, CaIM & CIS & !CA2ATP
+CaIM, !Depolar
+CA2ATP, CA2
+KEV, CA2
+HATP, !CA2 
+AnionEM, CA2
+Clousure, AnionEM & KOUT & KAP
+KOUT, Depolar
+KAP,Depolar 
+Depolar, KEV &!HATP & !KOUT & AnionEM
+
+

@@ -1,0 +1,100 @@
+---
+title: "Parte 2"
+author: "Erick Emiliano Aduna Camilo"
+date: "19/3/2022"
+output: html_document
+---
+
+
+## Tarea 3 Parte 2 Red booleana
+
+
+Para realizar esta parte de la tarea es necesario cargar la libreria BoolNet
+
+
+```{r, echo=TRUE}
+
+library(BoolNet)
+
+
+
+```
+
+Con la libreria cargada crearemos entonces a partir de un texto plano la red de interacciones de
+**5 nodos definidos como A,B,C,D y E**, el texto plano se encuentra en la carpeta directa de Datos del proyecto de la Tarea 3.
+
+
+La tabla de verdad sería así
+
+
+Gen, Regla
+
+A, B & NOT E 
+
+B, C
+
+C, E & NOT A
+
+D, C
+
+E, E OR D AND NOT A 
+
+
+En ese ejemplo la idea es que A funcione como una inhibdor casi universal para la red, y C como el activador para los genes B y D, pero que C dependa del activador que es E, autoregulable y dependiente de A. 
+
+
+Una vez generada las reglas de la red en un texo plano deniminado ABCDE.txt, que se encuentra en la carpeta de datos del proyecto cargamos la red. Podemos tambien hacer una representación grafica de la red para darnos una mejor idea de como funciona esta. 
+
+
+```{R echo=TRUE, warning=FALSE}
+
+red_bool <- loadNetwork("Datos/ABCDE.txt")
+
+red_bool
+
+
+plotNetworkWiring(red_bool)
+
+```
+
+
+Con la red cargada y lista podemos obtener todos los atractores de la red
+
+
+
+
+```{r echo=TRUE}
+
+atractores <- getAttractors(red_bool)
+
+atractores
+
+plotAttractors(atractores)
+
+```
+
+Como se ve, el programa marca que solo existen dos atractores, el atractor 1 que implica que todos los genes estan apagaos inclutendo a A y el estado 2 que implica que solo A esta apagado y los demas estan activos, ambos atractores son puntuales, por lo que no hay un ciclo de estados que los confromen. 
+
+Podemos obtener ahora cual de estos estados es más probable en base a una tabla de transición de estados la cual nos permite ver todos los estados iniciales y a que atractor llegaran eventualmente 
+
+```{r echo=TRUE}
+
+getTransitionTable(atractores)
+
+
+```
+
+La tabla nos muestra todos los estados posibles y tomando la información que arroja el objeto de atractores al correrlo vemos que el estado más probable es el estado 2 con 23 de los posibles 32 estados iniciales mientras que el atractor 1 tiene 9 estados iniciales que terminan en este estado 
+
+
+Ahora graficamos para tener una representación visual de lo anterior 
+
+
+```{r echo=TRUE}
+plotStateGraph(atractores)
+
+
+
+```
+
+ Y como podemos ver el conjunto de estados de el atractor 2 es más grande que el del atractor uno. No se piden conclisiones pero con esto podemos decir que A como inhibidor es poco eficiente.

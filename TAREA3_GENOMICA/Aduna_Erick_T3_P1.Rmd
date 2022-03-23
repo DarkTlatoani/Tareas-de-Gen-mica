@@ -1,0 +1,27 @@
+---
+title: "Aduna_Erick_T3_P1"
+author: "Erick Emiliano Aduna Camilo"
+date: "19/3/2022"
+output: html_document
+---
+
+
+## Tarea 3_pt.1 Genómica Funcional 2022 
+
+
+Para esta parte de la tarea es necesario instalar una libreria extra(varías de hecho)
+
+Solo en el script del Rmd lo pongo, ya que no es necesao correr el código otra vez.
+
+```{r echo=TRUE}
+
+install.packages(c("matrixStats", "Hmisc", "splines", "foreach", "doParallel", "fastcluster", "dynamicTreeCut", "survival", "BiocManager"))
+                 
+                 
+BiocManager::install(c("GO.db", "preprocessCore", "impute"))
+
+BiocManager::install("GO.db", force = T)
+```
+
+Ahora siguiedno el tutorial, construiremos una red de coexpresión
+Bi

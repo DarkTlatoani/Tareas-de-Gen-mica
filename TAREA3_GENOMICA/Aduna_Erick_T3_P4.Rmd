@@ -1,0 +1,128 @@
+---
+title: "Parte 3"
+author: "Erick Emiliano Aduna Camilo"
+date: "19/3/2022"
+output: html_document
+---
+
+
+## Red de señalización, Parte 3
+
+
+
+Para esta parte tomaremos la representaci+on de una red de señalización, formada en base a la información de estos dos artículos
+
+Li S, Assmann SM, Albert R. Predicting essential components of signal transduction
+networks: a dynamic model of guard cell abscisic acid signaling. PLoS Biol 2006;4:e31
+
+Saadatpour A, Albert I, Albert R. Attractor analysis of asynchronous Boolean models of
+signal transduction networks. J Theor Biol 2010;4:641–56. 
+
+
+
+Las posibles reglas de la red son estas:
+
+
+CIS, cGMP & cADPR & InsP3
+cGMP, GC
+cADPR, ADPRc
+InsP3,PLC
+GC, NO 
+ADPRc, NO 
+NO, NOS 
+NOS,CA2
+PLC,CA2
+CA2, CaIM & CIS & !CA2ATP
+CaIM, !Depolar
+CA2ATP, CA2
+KEV, CA2
+HATP, !CA2 
+AnionEM, CA2
+Clousure, AnionEM &KOUT & KAP
+KOUT, Depolar
+KAP,Depolar 
+Depolar, KEV&!HATP & !KOUT& AnionEM
+
+
+
+
+Ahora hacemos el modelo en base a el esquema de los artículos,con ayuda del paquete BoolNet
+
+el archivo de texto plano con la reglas esta igualmente anexado en la carpeta de "Datos" del R project
+````{r echo= T}
+
+library(BoolNet)
+
+```
+
+`````{r echo=TRUE}
+
+red_senalizacion <- loadNetwork("Datos/Red de senalizacion.txt")
+
+red_senalizacion 
+
+````
+
+
+Con la red ya cargada podemos hacer analisis y dar importancia biológica a los atractores resultantes.
+
+
+Ploteamos la red para visualizarla
+
+````{r echo= TRUE}
+
+
+plotNetworkWiring(red_senalizacion)
+
+
+````
+
+Obtenemos los atractores de la red 
+
+````{r echo=TRUE}
+
+satractors <-  getAttractors(red_senalizacion)
+
+satractors
+
+plotAttractors(satractors)
+
+```
+
+Para este caso, se tomo que todos los elementos que depende de más de un componente para ser activados sean con los condicionales AND, de modo que bajo este acomodo solo tenemos un atractor, donde los únicos elementos activos son la Hidrogeno Atpeasa y CaIM, atractor que podemos interpretar como que mientras CaIM este activo habra Ca2+ que a su vez activaria a la ATPasa para mantener el estado depolar inactivo sin embargo el atractor no toma en cuenta que haya presencia de Ca2+ por lo que no tiene mucho sentido, ademas de que las vías de señalización se caracterizan por tener más de un camino, por lo que se cambiaron las reglas para ver si obteniamos nuevos atractores, en este caso con el condicional OR en lugar de AND para todos los casos, a excepción de aquellos que impliacn inhibición, es decir que aquellos que presentan ! deben ser obligatorios. 
+
+
+
+
+````{r echo=TRUE}
+
+
+red_senalizacion_1 <- loadNetwork("Datos/Red de senalizacion1.txt")
+
+red_senalizacion_1
+
+satractors_1 <- getAttractors(red_senalizacion_1)
+
+plotAttractors(satractors_1)
+
+
+
+
+````
+
+Repitiendo los mismos pasos encontramos ahora dos atractores, pero ahora son ciclicos, por lo que este tipo de atractores tiene más sentido que al inicio, si bien puede parecer obvio como aplicar las reglas, con este ejemplo me di cuenta que no es tan sencillo al inicio. 
+
+
+Continuando con los atractores para el segundo caso,como se menciono se obtienen dos atractores ciclicos y un punto importante a destacar es que CIS siempre se encuantra activo, tiene sentido debido a que cuenta con 3 activadores y para este ejemplo usamos el condicional OR, por lo que no es necesario que los 3 lo activen simultaneamente. Revisando los articulos en los que esta basado el modelo, vemos que CIS tiene funciones de transporte de membrana, por lo que puede tener sentido que siempre este activo, simplemente cambia la molécula por la que es activada y en estricto sentido que transportaría, revisando algunos artículos extras se menciona la luz y la dirección de esta "Cis". El resto de elementos son otras enzimas y o transportadores, por lo que es una vía compleja. 
+
+
+
+
+
+
+
+
+
+
+
+

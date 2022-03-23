@@ -1,0 +1,122 @@
+---
+title: "Parte 4"
+author: "Erick Emiliano Aduna Camilo"
+date: "19/3/2022"
+output: html_document
+---
+
+
+
+##Red de Cogustos 
+
+
+Cargamos el paquete de igraph puesto que será necesario.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+library(igraph)
+
+```
+
+Ahora con los datos de la red de cogustos debemos primero prepararla 
+
+```{r include=FALSE}
+
+gustos <- read.csv("Datos/Red de co-gustos 2022 - Hoja 1.csv")
+row.names(gustos) <- gustos[,1]
+gustos <- gustos[,-1]
+corgu <- cor(t(gustos))
+corgu
+adyacencia <-  (1+corgu)/2
+diag(corgu) <-0
+ad1 <- ifelse(adyacencia>0.75,1,0 )
+red_series <- graph_from_adjacency_matrix(ad1, mode = c("undirected"))
+```
+
+Una vez este lista en base al valor que se definio como coexpresión o en este caso a co gustoss, gráficamos y se nos indica que minimo deben existir tres outlayers, el valor que se uso como punto umbran fue el 0.75, por lo que valores menores a estos en base a la matriz de correlaciones implica que no hay cogusto, hay valores dentro de la matriz que no alcanzan este valor, por lo que no conectan con ningun otro nodo.
+
+
+La gráfica se ve así:
+
+````{r echo=TRUE}
+
+plot(red_series)
+
+
+```
+
+Como se observa para la red dicotomica es decir de ceros y unos, encontramos 3 outlayers
+
+
+**Obtener la distribución de conectividades de la red dicotomica.** 
+````{r echo=TRUE}
+
+deeseries <- degree(red_series)
+
+
+hist(deeseries)
+```
+
+**Obtener los tres nodos más conectados de la red dicotomica**
+
+````{r echo=TRUE}
+
+ head(sort(deeseries, decreasing = T),3)
+
+```
+
+**Los nodos m ́as importantes con al menos tres medidas de centralidad (D**
+
+````{r echo=TRUE}
+
+#Usando el deegre
+
+head(sort(deeseries, decreasing = T),3)
+
+#Usando la exentricidad
+
+head(sort(eccentricity(red_series), decreasing = F),3)
+#Usando el closeness 
+head(sort(closeness(red_series),decreasing = T),3)
+```
+
+**Clusters obtenidos con al menos tres métodos**
+
+````{r echo=TRUE}
+#Para la red dicotomica 
+
+#Con cluster edge betweenness
+unoc <- cluster_edge_betweenness(red_series)
+
+plot(unoc, red_series)
+
+#Con fast greedy 
+dosc <- cluster_fast_greedy(red_series)
+
+plot(dosc, red_series)
+
+# Con Optimal  
+
+tresc <- cluster_optimal(red_series)
+
+
+plot(tresc, red_series)
+
+```
+
+
+Los tres clusters 1 y 3 son más parecidos en cuanto a las agrupaciones sin embargo varian en el número de grupos que generan. Los clusters se hicieron solo para la red dicotomica para la red pesada no dejo realizarlo.
+
+
+**Discusión del tipo de Red**
+
+
+Ambas redes son **no dirigidas** debido a que no importa la dirección de la conexión lo que importa es que superen el valor umbral inicial, si lo superan los nodos estan conectados no hay in o out, y en el caso de la red pesada solo implica en este caso en particular que tan afines seían dos personas en cuanto a las series que ven, pero no importa la dirección de la nonexión.
+
+
+
+
+
+
+
+
